@@ -12,32 +12,32 @@ import com.example.concatadaptergrid.entities.Product
 import com.example.concatadaptergrid.repositories.ProductRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
-import javax.inject.Inject
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
-class ProductViewModel @Inject constructor(
+class ProductPagingViewModel @Inject constructor(
     private val productRepository: ProductRepository,
 ) : ViewModel() {
 
-    private val _ldState = MutableLiveData<ProductUIState>()
-    val ldState: LiveData<ProductUIState>
+    private val _ldState = MutableLiveData<PPUiState>()
+    val ldState: LiveData<PPUiState>
         get() = _ldState
 
-    val accept: (UiAction) -> Unit
-    val state: StateFlow<ProductUIState>
+    val accept: (ProductPagingUiAction) -> Unit
+    val state: StateFlow<PPUiState>
 
     init {
-        val actionStateFlow = MutableSharedFlow<UiAction>()
+        val actionStateFlow = MutableSharedFlow<ProductPagingUiAction>()
         accept = { action ->
             viewModelScope.launch { actionStateFlow.emit(action) }
         }
         val searches = actionStateFlow
-            .filterIsInstance<UiAction.Search>()
+            .filterIsInstance<ProductPagingUiAction.Search>()
             .distinctUntilChanged()
-            .onStart { emit(UiAction.Search) }
+            .onStart { emit(ProductPagingUiAction.Search) }
         val queriesScrolled = actionStateFlow
-            .filterIsInstance<UiAction.Scroll>()
+            .filterIsInstance<ProductPagingUiAction.Scroll>()
             .distinctUntilChanged()
             // This is shared to keep the flow "hot" while caching the last query scrolled,
             // otherwise each flatMapLatest invocation would lose the last query scrolled,
@@ -46,7 +46,7 @@ class ProductViewModel @Inject constructor(
                 started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
                 replay = 1
             )
-            .onStart { emit(UiAction.Scroll) }
+            .onStart { emit(ProductPagingUiAction.Scroll) }
         state = searches
             .flatMapLatest { search ->
                 combine(
@@ -57,11 +57,11 @@ class ProductViewModel @Inject constructor(
             }.map { (scroll, pagingData) ->
                 val pagingProductItems = pagingData
                     .map { ProductItemCard.from(it) }
-                ProductUIStateSuccess(_pagingData = pagingProductItems)
+                PPUIStateSuccess(_pagingData = pagingProductItems)
             }.stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
-                initialValue = ProductUIStateLoading
+                initialValue = PPUIStateLoading
             )
     }
 
@@ -70,17 +70,17 @@ class ProductViewModel @Inject constructor(
             .cachedIn(viewModelScope)
 }
 
-sealed class ProductUIState(
+sealed class PPUiState(
     val pagingData: PagingData<ProductItemCard> = PagingData.empty()
 )
-object ProductUIStateLoading : ProductUIState()
-data class ProductUIStateSuccess(
+object PPUIStateLoading : PPUiState()
+data class PPUIStateSuccess(
     private val _pagingData: PagingData<ProductItemCard>
-) : ProductUIState(_pagingData)
+) : PPUiState(_pagingData)
 
-data class ProductUIStateError(val error: String) : ProductUIState()
+data class PPUIStateError(val error: String) : PPUiState()
 
-sealed class UiAction {
-    object Search : UiAction()
-    object Scroll : UiAction()
+sealed class ProductPagingUiAction {
+    object Search : ProductPagingUiAction()
+    object Scroll : ProductPagingUiAction()
 }

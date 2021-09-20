@@ -3,26 +3,30 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/PagingFragment">
 
     <fragment
-        android:id="@+id/FirstFragment"
+        android:id="@+id/PagingFragment"
         android:name="com.example.concatadaptergrid.PagingFragment"
         android:label="@string/first_fragment_label"
         tools:layout="@layout/fragment_paging">
-
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            android:id="@+id/action_PagingFragment_to_MultiAdapterFragment"
+            app:destination="@id/MultiAdapterFragment"
+            app:popUpTo="@+id/nav_graph"
+            app:popUpToInclusive="true"
+            />
     </fragment>
     <fragment
-        android:id="@+id/SecondFragment"
-        android:name="com.example.concatadaptergrid.SecondFragment"
+        android:id="@+id/MultiAdapterFragment"
+        android:name="com.example.concatadaptergrid.MultiAdapterFragment"
         android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second">
-
+        tools:layout="@layout/fragment_multiadapter">
         <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            android:id="@+id/action_MultiAdapterFragment_to_PagingFragment"
+            app:destination="@id/PagingFragment"
+            app:popUpTo="@+id/nav_graph"
+            app:popUpToInclusive="true"
+            />
     </fragment>
 </navigation>

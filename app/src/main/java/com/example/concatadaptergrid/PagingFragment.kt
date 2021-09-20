@@ -13,9 +13,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.concatadaptergrid.adapters.PagingProductAdapter
 import com.example.concatadaptergrid.adapters.ProductAdapterSingleHeader
 import com.example.concatadaptergrid.databinding.FragmentPagingBinding
-import com.example.concatadaptergrid.viewmodels.ProductUIState
-import com.example.concatadaptergrid.viewmodels.ProductViewModel
-import com.example.concatadaptergrid.viewmodels.UiAction
+import com.example.concatadaptergrid.viewmodels.PPUiState
+import com.example.concatadaptergrid.viewmodels.ProductPagingUiAction
+import com.example.concatadaptergrid.viewmodels.ProductPagingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class PagingFragment : Fragment() {
 
-    private val vmProduct: ProductViewModel by viewModels()
+    private val vmProduct: ProductPagingViewModel by viewModels()
 
     private var _binding: FragmentPagingBinding? = null
     private val binding
@@ -95,14 +95,14 @@ class PagingFragment : Fragment() {
 
     private fun FragmentPagingBinding.bindList(
         adapter: PagingProductAdapter,
-        uiState: StateFlow<ProductUIState>,
-        onScrollChanged: (UiAction.Scroll) -> Unit
+        uiState: StateFlow<PPUiState>,
+        onScrollChanged: (ProductPagingUiAction.Scroll) -> Unit
     ) {
         productRecycler.addOnScrollListener(
             object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     if (dy != 0) {
-                        onScrollChanged(UiAction.Scroll)
+                        onScrollChanged(ProductPagingUiAction.Scroll)
                     }
                 }
             }
@@ -110,7 +110,6 @@ class PagingFragment : Fragment() {
         val pagingData = uiState
             .map { it.pagingData }
             .distinctUntilChanged()
-        val loadingState = adapter.loadStateFlow
         lifecycleScope.launch {
             pagingData
                 .collectLatest { pagingData ->

@@ -1,8 +1,8 @@
 package com.example.concatadaptergrid
 
 import android.os.Bundle
-import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavDirections
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -13,7 +13,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,18 +21,34 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         val navController = findNavController(R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
+        binding.bottomNavigation.setOnNavigationItemSelectedListener { menuItem ->
+            val currentDestination = navController.currentDestination
+            when (menuItem.itemId) {
+                R.id.page_1 -> {
+                    if (currentDestination?.id != R.id.PagingFragment) {
+                        navController.navigate(
+                            MultiAdapterFragmentDirections
+                                .actionMultiAdapterFragmentToPagingFragment(),
+                        )
+                        true
+                    } else {
+                        false
+                    }
+                }
+                R.id.page_2 -> {
+                    if (currentDestination?.id != R.id.MultiAdapterFragment) {
+                        navController.navigate(
+                            PagingFragmentDirections
+                                .actionPagingFragmentToMultiAdapterFragment()
+                        )
+                        true
+                    } else {
+                        false
+                    }
+                }
+                else -> false
+            }
+        }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        return navController.navigateUp(appBarConfiguration) ||
-            super.onSupportNavigateUp()
-    }
 }
