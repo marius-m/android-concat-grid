@@ -10,9 +10,20 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.concatadaptergrid.adapters.ProductAdapterBasic
 import com.example.concatadaptergrid.adapters.ProductAdapterSingleHeader
+import com.example.concatadaptergrid.adapters.ProductItemFactory
 import com.example.concatadaptergrid.databinding.FragmentMultiadapterBinding
+import com.example.concatadaptergrid.viewmodels.ProductSimpleUIStateError
+import com.example.concatadaptergrid.viewmodels.ProductSimpleUIStateLoading
+import com.example.concatadaptergrid.viewmodels.ProductSimpleUIStateSuccess
 import com.example.concatadaptergrid.viewmodels.ProductSimpleViewModel
+import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * Fragment with limited data
+ * Using ConcatAdapter + GridLayoutManager
+ */
+@AndroidEntryPoint
 class MultiAdapterFragment : Fragment() {
 
     private val vmProduct: ProductSimpleViewModel by viewModels()
@@ -20,6 +31,9 @@ class MultiAdapterFragment : Fragment() {
     private var _binding: FragmentMultiadapterBinding? = null
     private val binding
         get() = _binding!!
+
+    private lateinit var adapterProducts1: ProductAdapterBasic
+    private lateinit var adapterProducts2: ProductAdapterBasic
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,7 +52,7 @@ class MultiAdapterFragment : Fragment() {
             concatAdapterIndex = 0,
             gridSpanSize = PagingFragment.GRID_SPAN_SIZE,
         )
-        val adapterProductAdapter = ProductAdapterBasic(
+        adapterProducts1 = ProductAdapterBasic(
             context = context,
             concatAdapterIndex = 1,
         )
@@ -47,7 +61,7 @@ class MultiAdapterFragment : Fragment() {
             concatAdapterIndex = 2,
             gridSpanSize = PagingFragment.GRID_SPAN_SIZE,
         )
-        val adapterProductAdapter2 = ProductAdapterBasic(
+        adapterProducts2 = ProductAdapterBasic(
             context = context,
             concatAdapterIndex = 3,
         )
@@ -58,9 +72,9 @@ class MultiAdapterFragment : Fragment() {
         val concatAdapter = ConcatAdapter(
             concatAdapterConfig,
             adapterSingleHeader,
-            adapterProductAdapter,
+            adapterProducts1,
             adapterSingleHeader2,
-            adapterProductAdapter2
+            adapterProducts2
         )
         binding.productRecycler.layoutManager = layoutManager
         binding.productRecycler.adapter = concatAdapter
@@ -77,6 +91,36 @@ class MultiAdapterFragment : Fragment() {
         }
         adapterSingleHeader.bindHeaderSimple("Items1")
         adapterSingleHeader2.bindHeaderSimple("Items2")
+        observeStateChanges()
+        vmProduct.fetchProducts()
+    }
+
+    private fun observeStateChanges() {
+        vmProduct.ldState.observe(this, {
+            when (it) {
+                is ProductSimpleUIStateError -> {
+                    Snackbar
+                        .make(binding.root, "Error loading products", Snackbar.LENGTH_SHORT)
+                        .show()
+                }
+                ProductSimpleUIStateLoading -> {
+                    Snackbar
+                        .make(binding.root, "Loading products", Snackbar.LENGTH_SHORT)
+                        .show()
+                }
+                is ProductSimpleUIStateSuccess -> {
+                    Snackbar
+                        .make(binding.root, "Showing products", Snackbar.LENGTH_SHORT)
+                        .show()
+                    adapterProducts1.bindProducts(
+                        ProductItemFactory.createFromProducts(it.products1)
+                    )
+                    adapterProducts2.bindProducts(
+                        ProductItemFactory.createFromProducts(it.products2)
+                    )
+                }
+            }.javaClass
+        })
     }
 
     override fun onDestroyView() {

@@ -24,7 +24,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 /**
- * A simple [Fragment] subclass as the default destination in the navigation.
+ * Fragment with data loading in pages
+ * Using ConcatAdapter + GridLayoutManager + Page3 framework
+ * Source: https://developer.android.com/topic/libraries/architecture/paging/v3-overview
  */
 @AndroidEntryPoint
 class PagingFragment : Fragment() {
