@@ -8,6 +8,7 @@ import com.example.concatadaptergrid.entities.Product
 data class ProductItemCard private constructor(
     val id: String,
     val title: String,
+    val subtitle: String,
     val price: String,
 ) : ProductItemVM {
 
@@ -16,6 +17,7 @@ data class ProductItemCard private constructor(
             return ProductItemCard(
                 id = product.id,
                 title = product.title,
+                subtitle = "Page(${product.page}) / index(${product.pageItemIndex})",
                 price = "${product.price} $",
             )
         }

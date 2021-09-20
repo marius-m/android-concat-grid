@@ -43,6 +43,7 @@ class ProductVHCard(
 ) : ProductVH(binding.root) {
     fun bind(productItem: ProductItemCard) {
         binding.productItemTitle.text = productItem.title
+        binding.productItemSubtitle.text = productItem.subtitle
         binding.productItemPrice.text = productItem.price
     }
 }

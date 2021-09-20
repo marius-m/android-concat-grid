@@ -16,7 +16,9 @@ class ProductRepository {
         return (page..(page + limit)).map { index ->
             Product(
                 id = "${page}_$index",
-                title = "Product_${page}_$index",
+                title = "Product",
+                page = page,
+                pageItemIndex = index,
                 price = Random.nextInt(0, 1000).toDouble()
             )
         }

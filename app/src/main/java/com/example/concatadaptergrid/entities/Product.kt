@@ -6,5 +6,7 @@ package com.example.concatadaptergrid.entities
 data class Product(
     val id: String,
     val title: String,
+    val page: Int,
+    val pageItemIndex: Int,
     val price: Double,
 )
