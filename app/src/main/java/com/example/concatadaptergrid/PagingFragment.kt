@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.concatadaptergrid.adapters.PagingProductAdapter
 import com.example.concatadaptergrid.adapters.ProductAdapterSingleHeader
-import com.example.concatadaptergrid.databinding.FragmentFirstBinding
+import com.example.concatadaptergrid.databinding.FragmentPagingBinding
 import com.example.concatadaptergrid.viewmodels.ProductUIState
 import com.example.concatadaptergrid.viewmodels.ProductViewModel
 import com.example.concatadaptergrid.viewmodels.UiAction
@@ -27,11 +27,11 @@ import kotlinx.coroutines.launch
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 @AndroidEntryPoint
-class FirstFragment : Fragment() {
+class PagingFragment : Fragment() {
 
     private val vmProduct: ProductViewModel by viewModels()
 
-    private var _binding: FragmentFirstBinding? = null
+    private var _binding: FragmentPagingBinding? = null
     private val binding
         get() = _binding!!
 
@@ -40,7 +40,7 @@ class FirstFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentFirstBinding.inflate(inflater, container, false)
+        _binding = FragmentPagingBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -93,7 +93,7 @@ class FirstFragment : Fragment() {
         )
     }
 
-    private fun FragmentFirstBinding.bindList(
+    private fun FragmentPagingBinding.bindList(
         adapter: PagingProductAdapter,
         uiState: StateFlow<ProductUIState>,
         onScrollChanged: (UiAction.Scroll) -> Unit
