@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.concatadaptergrid.adapters.PagingProductAdapter
+import com.example.concatadaptergrid.adapters.ProductAdapterSingleHeader
 import com.example.concatadaptergrid.databinding.FragmentFirstBinding
 import com.example.concatadaptergrid.viewmodels.ProductUIState
 import com.example.concatadaptergrid.viewmodels.ProductViewModel
@@ -45,18 +46,19 @@ class FirstFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        val adapterSingleHeader = ProductAdapterSingleHeader(
-//            context = context,
-//            concatAdapterIndex = 0,
-//            gridSpanSize = GRID_SPAN_SIZE,
-//        )
-//        val adapterSingleNestedCategories = ProductAdapterSingleNestCategories(
-//            context = context,
-//            concatAdapterIndex = 1,
-//            gridSpanSize = GRID_SPAN_SIZE,
-//        )
+        val context = requireContext()
+        val adapterSingleHeader = ProductAdapterSingleHeader(
+            context = context,
+            concatAdapterIndex = 0,
+            gridSpanSize = GRID_SPAN_SIZE,
+        )
+        val adapterSingleHeader2 = ProductAdapterSingleHeader(
+            context = context,
+            concatAdapterIndex = 1,
+            gridSpanSize = GRID_SPAN_SIZE,
+        )
         val adapterPagingProducts = PagingProductAdapter(
-            context = requireContext(),
+            context = context,
             concatAdapterIndex = 2
         )
         val layoutManager = GridLayoutManager(context, GRID_SPAN_SIZE)
@@ -65,8 +67,8 @@ class FirstFragment : Fragment() {
             .build()
         val concatAdapter = ConcatAdapter(
             concatAdapterConfig,
-//            adapterSingleHeader,
-//            adapterSingleNestedCategories,
+            adapterSingleHeader,
+            adapterSingleHeader2,
             adapterPagingProducts
         )
         binding.productRecycler.layoutManager = layoutManager
@@ -82,6 +84,8 @@ class FirstFragment : Fragment() {
                 return spanSize
             }
         }
+        adapterSingleHeader.bindHeaderSimple("Single adapter title 1")
+        adapterSingleHeader2.bindHeaderSimple("Single adapter title 2")
         binding.bindList(
             adapter = adapterPagingProducts,
             uiState = vmProduct.state,
